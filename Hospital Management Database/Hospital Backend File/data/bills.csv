@@ -1,0 +1,2 @@
+bill_id,patient_id,consultation_fee,medicine_charge,lab_charge,total_amount
+B001,P001,200.0,450.0,1220.0,1870.0

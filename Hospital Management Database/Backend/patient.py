@@ -44,34 +44,51 @@ def add_patient():
 
 def view_patients():
 
-    with open(PATIENT_FILE, 'r',) as file:
-        reader = csv.DictReader(file)
+    query = 'SELECT * FROM patients'
 
-        print('\n------PATIENTS------')
+    cursor.execute(query)
 
-        for row in reader:
+    patients = cursor.fetchall()
+
+    if not patients:
+        print('Patients Not Found !')
+        return
+
+    print('\n------PATIENT LIST------\n')
+
+    for patient in patients:
             
-            print(
-                f'{row['patient_id']} | '
-                f'{row['name']} | '
-                f'{row['age']} | '
-                f'{row['phone']} | '
-                f'{row['phone']} | '
-            )
+        print(f"Patient ID : {patient[0]}")
+        print(f"Name       : {patient[1]}")
+        print(f"Age        : {patient[2]}")
+        print(f"Gender     : {patient[3]}")
+        print(f"Phone      : {patient[4]}")
+        print("-" * 35)
 
 def search_patients():
 
     patient_id = input('Enter Patient_ID: ')
 
-    with open(PATIENT_FILE, 'r') as file:
-        reader = csv.DictReader(file)
+    query = '''
+            SELECT * FROM patients
+            WHERE patient_id = %s
+            '''
+    
+    cursor.execute(query, (patient_id,))
 
-        for row in reader:
-            if row['patient_id'] == patient_id:
+    patient = cursor.fetchone()
 
-                print('\nPatient Found !')
-                print(row)
+    if patient:
 
+        print("\n===== Patient Found =====\n")
+        print(f"Patient ID : {patient[0]}")
+        print(f"Name       : {patient[1]}")
+        print(f"Age        : {patient[2]}")
+        print(f"Gender     : {patient[3]}")
+        print(f"Phone      : {patient[4]}")
+
+    else:
+        print("Patient Not Found!")
 
 def delete_patients():
 

@@ -118,31 +118,43 @@ def update_patients():
 
     patient_id = input('Enter Patient_ID: ')
 
-    rows = []
-    found = False
+    cursor.execute(
+        'SELECT * FROM patients WHERE patient_id = %s',
+        (patient_id,)
+    )
 
-    with open(PATIENT_FILE, 'r') as file:
-        reader = csv.DictReader(file)
+    patient = cursor.fetchone()
 
-        for row in reader:
-            if row['patient_id'] == patient_id:
-                found = True
-
-                row['name'] = input('Enter New Name: ')
-                row['age'] = int(input('Enter New Age: '))
-                row['gender'] = input('Enter New Gender: ')
-                row['phone'] = int(input('Enter New phone: '))
-
-            rows.append(row)
-
-    if not found:
-        print('\nPatient Not Found !')
+    if not patient:
+        print('Patient Not Found !')
         return
     
-    with open(PATIENT_FILE, 'w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=HEADER)
+    name = input("Enter New Name: ")
+    age = int(input("Enter New Age: "))
+    gender = input("Enter New Gender: ")
+    phone = input("Enter New Phone: ")
 
-        writer.writeheader()
-        writer.writerows(rows)
+    query = '''
+    UPDATE patients
+    SET
+    name = %s,
+    age = %s,
+    gender = %s,
+    phone = %s
+    WHERE patient_id = %s
+    '''
+
+    values = (
+        name,
+        age,
+        gender,
+        phone,
+        patient_id
+    )
+
+    cursor.execute(query, values)
+
+    conn.commit()
 
     print('\nPatient Updated Successfully.')
+    

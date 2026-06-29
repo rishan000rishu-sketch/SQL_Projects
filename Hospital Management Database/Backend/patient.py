@@ -94,27 +94,23 @@ def delete_patients():
 
     patient_id  = input('Enter Patient_ID: ')
 
-    rows = []
-    found = False
+    cursor.execute(
+        'SELECT * FROM patients WHERE patient_id = %s',
+        (patient_id,)
+    )
 
-    with open(PATIENT_FILE, 'r') as file:
-        reader = csv.DictReader(file)
+    patient = cursor.fetchone()
 
-        for row in reader:
-            if row['patient_id'] == patient_id:
-                found = True
-            else:
-                rows.append(row)
-
-    if not found:
+    if not patient:
         print('Patient Not Found !')
         return
     
-    with open(PATIENT_FILE, 'w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=HEADER)
+    cursor.execute(
+        'DELETE FROM patients WHERE patient_id = %s',
+        (patient_id,)
+    )
 
-        writer.writeheader()
-        writer.writerows(rows)
+    conn.commit()
 
     print('\nPatient Deleted Successfully !')
 

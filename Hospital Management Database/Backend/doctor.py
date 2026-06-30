@@ -26,15 +26,20 @@ def add_doctor():
     specialisation = input('Enter Specialisation: ')
     phone = int(input('Enter Phone No: '))
 
-    with open(DOCTOR_FILE, 'a', newline='') as file:
-        writer = csv.writer(file)
+    query = '''INSERT INTO doctors (doctor_id, name,specialisation, phone)
+               VALUES (%s, %s, %s, %s)
+            '''
+    
+    values = (
+        doctor_id,
+        name,
+        specialisation,
+        phone
+    )
 
-        writer.writerow([
-            doctor_id,
-            name,
-            specialisation,
-            phone
-        ])
+    cursor.execute(query, values)
+
+    conn.commit()
 
     print('Doctor Added Successfully.')
 

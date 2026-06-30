@@ -84,34 +84,40 @@ def print_bill(bill_id):
 
 def view_bills():
 
+    cursor.execute('SELECT * FROM bills')
+
+    bills = cursor.fetchall()
+
+    if not bills:
+        print('Bills Not Found !')
+        return
+
     print('\n------BILL RECORDS------')
 
-    with open(BILL_FILE, 'r') as file:
-        reader = csv.DictReader(file)
+    for bill in bills:
 
-        for row in reader:
-            
-            print(f'{row['bill_id']} | ')
-            print(f'{row['patient_id']} | ')
-            print(f'{row['total_amount']}')
+        print(f'Bill ID      : {bill[0]} | ')
+        print(f'Patient ID   : {bill[1]} | ')
+        print(f'Total Amount : {bill[5]}')
+        print('-' * 25)
 
 def search_bill():
 
     bill_id = input('Enter Bill_ID: ')
 
-    with open(BILL_FILE, 'r') as file:
-        reader = csv.DictReader(file)
+    cursor.execute('SELECT * FROM bills WHERE bill_id = %s', (bill_id,))
 
-        for row in reader:
-            if row['bill_id'] == bill_id:
-                print('\nBill found.\n')
+    bill = cursor.fetchone()
 
-                print(f'Bill_ID          : {row['bill_id']}')
-                print(f'Patient_ID       : {row['patient_id']}')
-                print(f'Consultation Fee : {row['consultation_fee']}')
-                print(f'Medicine Charge  : {row['medicine_charge']}')
-                print(f'Lab Charge       : {row['lab_charge']}')
-                print(f'Total Amount     : {row['total_amount']}')
+    if bill:
+
+                print('\n========Bill Found========')
+                print(f'Bill_ID          : {bill[0]}')
+                print(f'Patient_ID       : {bill[1]}')
+                print(f'Consultation Fee : {bill[2]}')
+                print(f'Medicine Charge  : {bill[3]}')
+                print(f'Lab Charge       : {bill[4]}')
+                print(f'Total Amount     : {bill[5]}')
                 return
             
     print('\nBill Not Found.')

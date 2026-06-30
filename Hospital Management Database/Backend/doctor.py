@@ -45,19 +45,23 @@ def add_doctor():
 
 def view_doctors():
 
-    with open(DOCTOR_FILE, 'r') as file:
-        reader = csv.DictReader(file)
+    cursor.execute('SELECT * FROM doctors')
 
-        print('\n--------DOCTORS--------')
+    doctors = cursor.fetchall()
 
-        for row in reader:
+    if not doctors:
+        print('Doctor Not Found !')
+        return
 
-            print(
-                f'{row['doctor_id']} | '
-                f'{row['name']} | '
-                f'{row['specialisation']} | '
-                f'{row['phone']} | '
-            )
+    print('\n--------DOCTORS--------')
+
+    for doctor in doctors:
+
+        print(f'Doctor ID      : {doctor[0]}')
+        print(f'Name           : {doctor[1]}')
+        print(f'Specialisation : {doctor[2]}')
+        print(f'Phone          : {doctor[3]}')
+        print('-'*30)
 
 def search_doctor():
 

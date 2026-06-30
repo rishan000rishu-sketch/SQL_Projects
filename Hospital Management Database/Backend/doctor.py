@@ -67,19 +67,19 @@ def search_doctor():
 
     doctor_id = input('Enter Doctor_ID: ')
 
-    with open(DOCTOR_FILE, 'r') as file:
-        reader = csv.DictReader(file)
+    cursor.execute('SELECT * FROM doctors WHERE doctor_id = %s', (doctor_id,))
 
-        for row in reader:
-            if row['doctor_id'] == doctor_id:
-                
-                print(
-                f'{row['doctor_id']} | '
-                f'{row['name']} | '
-                f'{row['specialisation']} | '
-                f'{row['phone']} | '
-            )
-                
+    doctor = cursor.fetchone()
+
+    if not doctor:
+        print('Doctor Not Found !')
+        return
+    
+    print(f'\nDoctor ID      : {doctor[0]}')
+    print(f'Name           : {doctor[1]}')
+    print(f'Specialisation : {doctor[2]}')
+    print(f'Phone          : {doctor[3]}')
+
 def update_doctor():
 
     doctor_id = input('Enter Doctor_ID: ')

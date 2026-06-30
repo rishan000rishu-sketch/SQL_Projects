@@ -123,25 +123,16 @@ def delete_doctor():
 
     doctor_id = input('Enter Doctor_ID: ')
 
-    rows = []
-    found = False
+    cursor.execute('SELECT * FROM doctors WHERE doctor_id = %s', (doctor_id,))
 
-    with open(DOCTOR_FILE, 'r') as file:
-        reader = csv.DictReader(file)
+    doctor = cursor.fetchone()
 
-        for row in reader:
-            if row['doctor_id'] == doctor_id:
-                found = True
-            else:
-                rows.append(row)
+    if not doctor:
+        print('Doctor Not Found !')
+        return
+    
+    cursor.execute('DELETE FROM doctors WHERE doctor_id = %s', (doctor_id,))
 
-    if not found:
-        print('\nDoctor Not Found !')
-
-    with open(DOCTOR_FILE, 'w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=HEADER)
-
-        writer.writeheader()
-        writer.writerows(rows)
+    conn.commit()
 
     print('\nDoctor Deleted Successfully !')

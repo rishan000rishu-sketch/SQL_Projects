@@ -84,31 +84,39 @@ def update_doctor():
 
     doctor_id = input('Enter Doctor_ID: ')
 
-    rows = []
-    found =  False
+    cursor.execute('SELECT * FROM doctors WHERE doctor_id = %s', (doctor_id,))
 
-    with open(DOCTOR_FILE, 'r') as file:
-        reader = csv.DictReader(file)
+    doctor = cursor.fetchone()
 
-        for row in reader:
-            if row['doctor_id'] == doctor_id:
-                found = True
+    if not doctor:
+        print('Doctor Not Found !')
+        return
 
-                row['name'] = input('Enter New Name: ')
-                row['specialisation'] = input('Enter New Specialisation: ')
-                row['phone'] = input('Enter New Phone: ')
+    name = input('Enter New Name: ')
+    specialisation = input('Enter New Specialisation: ')
+    phone = input('Enter New Phone: ')
 
-            rows.append(row)
+    query = '''
+        UPDATE doctors 
+        SET
+            name = %s,
+            specialisation = %s,
+            phone = %s
+        WHERE
+            doctor_id = %s
+    '''
 
-    if not found:
-        print('\nDoctor Not Found !')
+    values = (
+        name,
+        specialisation,
+        phone,
+        doctor_id
+    )
 
-    with open(DOCTOR_FILE, 'w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=HEADER)
+    cursor.execute(query, values)
 
-        writer.writeheader()
-        writer.writerows(rows)
-
+    conn.commit()
+    
     print('Doctor Updated Successfully.')
 
 def delete_doctor():

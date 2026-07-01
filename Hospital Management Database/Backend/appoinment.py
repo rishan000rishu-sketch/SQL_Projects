@@ -1,62 +1,19 @@
-import os
-import csv
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+from connection import cursor, conn
+from patient import patient_exists
+from doctor import doctor_exists
 
-DATA_DIR = os.path.join(BASE_DIR, 'data')
-DOCTOR_FILE = os.path.join(BASE_DIR, 'data/doctor.csv')
-PATIENT_FILE = os.path.join(BASE_DIR, 'data/patient.csv')
-APPOINMENT_FILE = os.path.join(BASE_DIR, 'data/appoinment.csv')
-
-
-HEADER = [
-    'appoinment_id',
-    'doctor_id',
-    'patient_id',
-    'appoinment_date'
-]
-
-def create_file():
-
-    os.makedirs(DATA_DIR, exist_ok=True)
-
-    if not os.path.exists(APPOINMENT_FILE):
-
-        with open(APPOINMENT_FILE, 'w', newline='') as file:
-            
-            writer = csv.writer(file)
-            writer.writerow(HEADER)
 
 def appoinment_exists(appoinment_id):
 
-    with open(APPOINMENT_FILE, 'r') as file:
-        reader = csv.DictReader(file)
+    query = 'SELECT * FROM appointments WHERE appoinment_id = %s'
 
-        for row in reader:
-            if row['appoinment_id'] == appoinment_id:
-                return True
-            
-    return False
+    cursor.execute(query, (appoinment_id,))
 
-def patient_exists(patient_id):
+    result = cursor.fetchone()
 
-    with open(PATIENT_FILE, 'r') as file:
-        reader = csv.DictReader(file)
-
-        for row in reader:
-            if row['patient_id'] == patient_id:
-                return True
-            
-    return False
-
-def doctor_exists(doctor_id):
-
-    with open(DOCTOR_FILE, 'r') as file:
-        reader = csv.DictReader(file)
-
-        for row in reader:
-            if row['doctor_id'] == doctor_id:
-                return True
+    if result:
+        return True
             
     return False
 
@@ -78,18 +35,24 @@ def book_appoinment():
 
     if not doctor_exists(doctor_id):
         print('Doctor_ID Not Found !')
+        return
     
-    appoinment_date = input('Enter Appoinment Date (dd-mm-yyyy): ')
+    appoinment_date = input('Enter Appoinment Date (yyyy-mm-dd): ')
 
-    with open(APPOINMENT_FILE, 'a', newline='') as file:
-        writer = csv.writer(file)
+    query = '''INSERT INTO appointments (appoinment_id, patient_id, doctor_id, appoinment_date)
+               VALUES(%s, %s, %s, %s)
+            '''
+    
+    values = (
+        appoinment_id,
+        patient_id,
+        doctor_id,
+        appoinment_date
+    )
 
-        writer.writerow([
-            appoinment_id,
-            patient_id,
-            doctor_id,
-            appoinment_date
-        ])
+    cursor.execute(query, values)
+
+    conn.commit()
 
     print('\nAppoinment Booked Successfully.')
 

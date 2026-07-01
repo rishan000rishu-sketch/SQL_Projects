@@ -103,27 +103,16 @@ def cancel_appoinments():
 
     appoinment_id = input('Enter Appoinment_ID: ')
 
-    rows = []
-    found = False
+    cursor.execute('SELECT * FROM appointments WHERE appoinment_id = %s', (appoinment_id,))
 
-    with open(APPOINMENT_FILE, 'r') as file:
-        reader = csv.DictReader(file)
+    result = cursor.fetchone()
 
-        for row in reader:
-            if row['appoinment_id'] == appoinment_id:
-                found = True
-            else:
-                rows.append(row)
-
-    if not found:
-        print('Appoinment Not Found !')
+    if not result:
+        print('Appointment Not Found !')
         return
     
-    with open(APPOINMENT_FILE, 'w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=HEADER)
+    cursor.execute('DELETE FROM appointments WHERE appoinment_id = %s', (appoinment_id,))
 
-        writer.writeheader()
-        writer.writerows(rows)
+    conn.commit()
 
     print('Appoinment Cancelled Successfully.')
-    

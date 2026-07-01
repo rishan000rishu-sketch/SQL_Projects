@@ -73,22 +73,29 @@ def view_appoinments():
             print(f'Doctor ID        : {row[2]}'),
             print(f'Appointment Date : {row[3]}'),
             print('-' *30)
+
+    else:
+        print('Appoinments Not Found !')
             
 def search_appoinments():
 
     appoinment_id = input('Enter Appoinment_ID: ')
 
-    with open(APPOINMENT_FILE, 'r') as file:
-        reader = csv.DictReader(file)
+    query = 'SELECT * FROM appointments WHERE appoinment_id = %s'
 
-        for row in reader:
-            if row['appoinment_id'] == appoinment_id:
+    cursor.execute(query, (appoinment_id,))
 
-                print(f'Apponment_ID : {row['appoinment_id']}')
-                print(f'Patient_ID   : {row['patient_id']}')
-                print(f'Doctor_ID    : {row['doctor_id']}')
-                print(f'Date         : {row['appoinment_date']}')
-                return
+    row = cursor.fetchone()
+
+    if row:
+                
+        print(f'\n-------Appointment-------\n')
+
+        print(f'Appointment_ID   : {row[0]}'),
+        print(f'Patient_ID       : {row[1]}'),
+        print(f'Doctor_ID        : {row[2]}'),
+        print(f'Appointment_Date : {row[3]}')
+        return
     
     print('Appoinment Not Found !')
 

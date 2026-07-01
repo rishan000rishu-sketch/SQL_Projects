@@ -3,11 +3,6 @@ from doctor import *
 from appoinment import *
 from billing import *
 
-create_patient_file()
-create_file() #doctor
-create_file() #appoinment
-create_bill_file()
-
 def patient_menu():
 
     while True:

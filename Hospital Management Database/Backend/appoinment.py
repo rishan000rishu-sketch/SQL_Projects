@@ -58,20 +58,22 @@ def book_appoinment():
 
 def view_appoinments():
 
-    print('\n----------APPOINMENTS-----------')
+    cursor.execute('SELECT * FROM appointments')
 
-    with open(APPOINMENT_FILE, 'r') as file:
-        reader = csv.DictReader(file)
+    result = cursor.fetchall()
 
-        for row in reader:
+    if result:
 
-            print(
-                f'{row['appoinment_id']} | ',
-                f'{row['patient_id']} | ',
-                f'{row['doctor_id']} | ',
-                f'{row['appoinment_date']}'
-            )
+        print('\n----------APPOINMENTS-----------\n')
 
+        for row in result:
+
+            print(f'Appointment ID   : {row[0]}'),
+            print(f'Patient ID       : {row[1]}'),
+            print(f'Doctor ID        : {row[2]}'),
+            print(f'Appointment Date : {row[3]}'),
+            print('-' *30)
+            
 def search_appoinments():
 
     appoinment_id = input('Enter Appoinment_ID: ')
